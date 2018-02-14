@@ -493,6 +493,24 @@ test_expect_success 'split "sub dir"/ with --branch for an incompatible branch' 
 	)
 '
 
+next_test
+test_expect_success 'split fails without squashed commits existing' '
+	subtree_test_create_repo "$subtree_test_count" &&
+	subtree_test_create_repo "$subtree_test_count/sub proj" &&
+	test_create_commit "$subtree_test_count" main1 &&
+	test_create_commit "$subtree_test_count/sub proj" sub1 &&
+		commit1=$( cd "$subtree_test_count/sub proj" && git rev-parse HEAD ) &&
+	test_create_commit "$subtree_test_count/sub proj" sub2 &&
+	(
+		cd "$subtree_test_count" &&
+		git fetch ./"sub proj" master &&
+		git subtree add --prefix="sub dir" --squash FETCH_HEAD &&
+		git gc --prune=all &&
+		! git rev-parse -q --verify "$commit1^{commit}" &&
+		test_must_fail git subtree split --prefix="sub dir"
+	)
+'
+
 #
 # Validity checking
 #

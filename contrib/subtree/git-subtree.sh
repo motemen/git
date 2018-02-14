@@ -693,7 +693,7 @@ cmd_split () {
 	then
 		unrevs=
 	else
-		unrevs="$(find_existing_splits "$dir" "$revs")"
+		unrevs="$(find_existing_splits "$dir" "$revs")" || die "could not find existing splits"
 	fi
 
 	# We can't restrict rev-list to only $dir here, because some of our
